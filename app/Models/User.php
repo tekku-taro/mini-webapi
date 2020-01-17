@@ -26,7 +26,7 @@ class User extends Eloquent
     public static function rules()
     {
         return[
-            'name'=>["require","string","min"=>4],
+            'name'=>["require","string","min"=>4,"unique"],
             'role'=>["require","string","list"=>["admin","user"]],
             'active'=>["int","len"=>1],
             'login_attempts'=>["int"],

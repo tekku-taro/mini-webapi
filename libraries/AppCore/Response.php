@@ -2,34 +2,38 @@
 namespace Lib\AppCore;
 class Response
 {
-    public static function json($data)
+    public static function json($data,$statusCode = 200)
     {
         // jsonデータでデータを返す
-        header('Content-Type: application/json');
+        header("Access-Control-Allow-Origin: *");
+        header('Content-Type: application/json',true,$statusCode);
         print(json_encode($data));
     }
     
-    public static function xml($data)
+    public static function xml($data,$statusCode = 200)
     {
         // xmlデータで返す
         $xml = arrayToXML($data);
 
-        header('Content-Type: application/xml');
+        header("Access-Control-Allow-Origin: *");
+        header('Content-Type: application/xml',true,$statusCode);
         print($xml);
     }
     
     public static function formatData($modelName, $action,  $success = true,$id = null,$data = null)
     {
         // 'data':[
-            // {id=1,zipcode="101-0001",address="A県B市C町"},
-            // {id=1,zipcode="101-0002",address="A県B市D町"},
+            // [id=1,zipcode="101-0001",address="A県B市C町"],
+            // [id=1,zipcode="101-0002",address="A県B市D町"],
             // ],
             // 'count': 100,
             // 'message':'100 zipcode records found.'
 
+            // 'data':['errors'=>[...]]
+
         if(isset($data) and $action === 'getIndex'){
             $count = $data->count();
-        }elseif(isset($data)){
+        }elseif(isset($data) and !isset($data['errors'])){
             $count = 1;
         }else{
             $count = 0;

@@ -61,16 +61,16 @@ class Dispatcher
         // リクエストのAPIクラスの存在を確認後、
         $apiClass = $this->getNamespace() . getAPIName($this->request->api);
         if(!class_exists($apiClass)){
-            print("<h1>404 error</h1> <p>apiClass {$apiClass} not found.</p>");
-            exit;
+            throw new \ErrorException("apiClass {$apiClass} not found.");
+
         }
         // new API(request) requestを渡す
         $apiObj = new $apiClass($this->request);
 
         $action = $this->matchAction($this->request->api, $this->request->method) . "Action";
         if($action === false){
-            print("<h1>404 error</h1> <p>no matched action in  apiClass {$apiClass}</p>");
-            exit;            
+            throw new \ErrorException("no matched action in  apiClass {$apiClass}");
+         
         }
 
         // メソッドを呼び出し

@@ -58,14 +58,13 @@ class Request
                     array_shift($url);
                 }
             } else {
-                // header("HTTP/1.0 404 Page not found");
-                print("<h1>404 error</h1> <p>page not found.</p>");
-                exit;
+
+                throw new \ErrorException("page not found.",404);                
+
             }
         } else {
-            // header("HTTP/1.0 404 Page not found");
-            print("<h1>404 error</h1> <p>page not found.</p>");
-            exit;
+            throw new \ErrorException("page not found.",404);                
+
         }
         // id or page
         if (isset($url[0])) {

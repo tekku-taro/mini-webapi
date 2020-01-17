@@ -40,8 +40,7 @@ abstract class API
     protected function callMethod($action, $params)
     {
         if (!method_exists($this, $action)) {
-            print("<h1>404 error</h1> <p>method {$action} doesn't exists in  apiClass ". get_class($this) ."</p>");
-            exit;
+            throw new \ErrorException("method {$action} doesn't exists in  apiClass ". get_class($this));            
         }
 
         list($args, $this->params) = $this->divideParamsIntoTwo($action, $params);

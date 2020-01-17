@@ -4,30 +4,26 @@
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(__DIR__));
 define('BOOTSTRAP', dirname(__FILE__));
+define('LOG', ROOT . DS . "logs");
 
 //エラーの設定
 error_reporting(E_ALL ^ E_DEPRECATED);
-ini_set('log_errors', 'On'); // ログの保存先
-ini_set('error_log', ROOT . DS . 'logs/php_error.log');
-
+ini_set('display_errors', 0);
+// ログの保存先
+$logpath = LOG . DS .  (new DateTime())->format("Y-m-d") . ' error.log';
+ini_set('error_log', $logpath);
 
 // echo dirname(__DIR__);
 // composer autoload
 require(ROOT . DS . 'vendor/autoload.php');
 
+// error handling
+set_error_handler("Lib\Error::errorHandler");
+set_exception_handler("Lib\Error::exceptionHandler");
 
 // 設定ファイルの読込
 Bootstrap\Config::load(ROOT . DS .  '.env');
 // print_r(Config::all());
-// エラーの表示
-$app_env = Bootstrap\Config::get('APP_ENV');
-if ($app_env === 'production') {
-    // エラー出力しない
-    ini_set('display_errors', 0);
-} else {
-    // エラー出力する
-    ini_set('display_errors', 1);
-}
 
 // databaseへの接続
 require(BOOTSTRAP . DS . 'database.php');

@@ -7,13 +7,13 @@ trait Model
 {
     public $numPerPage = 2;
 
-    public function getPageRecords($page,$params = [])
+    public function getPageRecords($page, $params = [])
     {
         if ($page < 1) {
             $page = 1;
         }
         $whereData=[];
-        if(!empty($params)){
+        if (!empty($params)) {
             $whereData = $this->createWhereData($params, $this->fillable);
         }
 
@@ -45,10 +45,9 @@ trait Model
         return [];
     }
 
-    public static function validate($data)
+    public static function validate($data,$model_id = null)
     {
-        $validator = new Validator(static::rules());
-        return $validator->validate($data);        
+        $validator = new Validator(static::rules(), static::class,$model_id);
+        return $validator->validate($data);
     }
-
 }
