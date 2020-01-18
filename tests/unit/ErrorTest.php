@@ -30,6 +30,10 @@ class ErrorTest extends TestCase
         error_reporting(E_ERROR);
     }
 
+    public function setUp():void
+    {
+        $this->error = new Error;
+    }
     /**
      * testErrorThrowErrorException
      *
@@ -58,7 +62,7 @@ class ErrorTest extends TestCase
 
 
         ob_start();
-        Error::exceptionHandler($e);
+        $this->error->exceptionHandler($e);
         $json = ob_get_clean();
         $expected = json_encode($errorData);
         $this->assertSame($expected, $json);
@@ -81,11 +85,11 @@ class ErrorTest extends TestCase
             'code'=>$e->getCode(),
             'file'=>$e->getFile(),
             'line'=>$e->getLine(),
-            'trace'=>$e->getTrace(),
+            'trace'=>$e->getTraceAsString(),
         ];
 
         ob_start();
-        Error::exceptionHandler($e);
+        $this->error->exceptionHandler($e);
 
 
         $json = ob_get_clean();
@@ -103,7 +107,7 @@ class ErrorTest extends TestCase
 
         $method->setAccessible(true);
 
-        $result = $method->invoke(null, $e);
+        $result = $method->invoke($this->error, $e);
         $expected = true;
 
         $this->assertSame($expected, $result);

@@ -17,7 +17,7 @@ class Error
         throw new \ErrorException($message, 0, $severity, $file, $line);
     }
 
-    public static function exceptionHandler($e)
+    public function exceptionHandler($e)
     {
         if (!empty($e->getCode())) {
             $code = $e->getCode();
@@ -38,7 +38,7 @@ class Error
         Response::json($response, $code);
     }
 
-    protected static function errorLog($e)
+    protected function errorLog($e)
     {
         ini_set('log_errors', 'On');
         
@@ -49,14 +49,14 @@ class Error
         return error_log($errorMsg);
     }
 
-    protected static function generateErrorData($e, $code = 500)
+    protected function generateErrorData($e, $code = 500)
     {
         $errorData = [
             'message'=>$e->getMessage(),
             'code'=>$code,
             'file'=>$e->getFile(),
             'line'=>$e->getLine(),
-            'trace'=>$e->getTrace(),
+            'trace'=>$e->getTraceAsString(),
         ];
 
         return $errorData;

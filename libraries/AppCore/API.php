@@ -7,11 +7,13 @@ use Lib\AppCore\Response;
 abstract class API
 {
     protected $request;
+    protected $authHeader;
     protected $params;
 
     public function __construct(Request $request)
     {
         $this->request = $request;
+
     }
 
 
@@ -19,10 +21,17 @@ abstract class API
     {
         $action = str_replace("Action", "", $name);
 
+        $responseData = [];
 
-        $this->beforeFilter($action, $arguments);
+        if (!$this->beforeFilter($action, $arguments)) {
+            return false;
+        }
+        
         $responseData = $this->callMethod($action, $this->request->params);
-        $this->afterFilter($action, $arguments);
+        
+        if (!$this->afterFilter($action, $arguments)) {
+            return false;
+        }
 
         $this->sendBack($responseData);
     }
@@ -30,37 +39,31 @@ abstract class API
     protected function beforeFilter($action, $arguments)
     {
         // print(" [beforeFilter] ");
+        return true;
     }
 
     protected function afterFilter($action, $arguments)
     {
         // print(" [afterFilter] ");
+        return true;
     }
 
     protected function callMethod($action, $params)
     {
         if (!method_exists($this, $action)) {
-            throw new \ErrorException("method {$action} doesn't exists in  apiClass ". get_class($this));            
+            throw new \ErrorException("method {$action} doesn't exists in  apiClass ". get_class($this));
         }
 
         list($args, $this->params) = $this->divideParamsIntoTwo($action, $params);
         // var_dump($this->params);
         $response = call_user_func_array([$this,$action], $args);
-        $id = null;
-        $modelName = getModelNameFromAPI((new \ReflectionClass(static::class))->getShortName());        
-        // var_dump($response);die();
-        if($response and !is_array($response)){//処理成功
-            if($action === 'getIndex'){
-                return Response::formatData($modelName,$action,true,null,$response);
-            }else{
-                return Response::formatData($modelName,$action,true,$response->id,$response);
-            }
-        }else{//処理失敗
-            if(isset($params['id'])){
-                $id = $params['id'];
-            }
-            return Response::formatData($modelName,$action,false,$id,$response);
-        }         
+
+        return $this->formatResponse($response, $action, $params);
+    }
+
+    protected function formatResponse($response, $action, $params)
+    {
+        return $response;
     }
 
     protected function divideParamsIntoTwo($action, $params)
@@ -84,10 +87,10 @@ abstract class API
     {
         // acceptによって、
         // 戻り値をResponse::json()かxml()に渡す
-        if($this->request->accept === 'xml'){
+        if ($this->request->accept === 'xml') {
             Response::xml($responseData);
-        }else{
+        } else {
             Response::json($responseData);
         }
-    }    
+    }
 }

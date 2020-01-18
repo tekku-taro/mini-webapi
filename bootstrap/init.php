@@ -18,12 +18,15 @@ ini_set('error_log', $logpath);
 require(ROOT . DS . 'vendor/autoload.php');
 
 // error handling
+
 set_error_handler("Lib\Error::errorHandler");
-set_exception_handler("Lib\Error::exceptionHandler");
+set_exception_handler([(new Lib\Error),"exceptionHandler"]);
+// set_exception_handler("Lib\Error::exceptionHandler");
 
 // 設定ファイルの読込
 Bootstrap\Config::load(ROOT . DS .  '.env');
 // print_r(Config::all());
+
 
 // databaseへの接続
 require(BOOTSTRAP . DS . 'database.php');

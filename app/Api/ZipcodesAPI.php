@@ -1,16 +1,11 @@
 <?php
 namespace App\Api;
 
-use Route\Request;
-use Lib\AppCore\API;
 use App\Models\Zipcode;
+use Lib\AppCore\ResourceAPI;
 
-class ZipcodesAPI extends API
+class ZipcodesAPI extends ResourceAPI
 {
-    public function __construct(Request $request)
-    {
-        parent::__construct($request);
-    }
 
     public function getIndex($page)
     {

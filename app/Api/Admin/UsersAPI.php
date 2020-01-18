@@ -1,16 +1,11 @@
 <?php
 namespace App\Api\Admin;
 
-use Route\Request;
-use Lib\AppCore\API;
+use Lib\AppCore\ResourceAPI;
 use App\Models\User;
 
-class UsersAPI extends API
+class UsersAPI extends ResourceAPI
 {
-    public function __construct(Request $request)
-    {
-        parent::__construct($request);
-    }
 
     public function getIndex($page)
     {
