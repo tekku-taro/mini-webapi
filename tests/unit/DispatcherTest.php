@@ -3,9 +3,11 @@ use PHPUnit\Framework\TestCase;
 
 use Route\Request;
 use Bootstrap\Config;
-use Lib\AppCore\Response;
+use App\Models\User;
 use Route\Dispatcher;
-use App\Api\Admin\UsersAPI;
+use Lib\JWT;
+use Lib\AppCore\DB;
+
 class DispatcherTest extends TestCase
 {
     public $request;
@@ -15,11 +17,15 @@ class DispatcherTest extends TestCase
     public static function setUpBeforeClass(): void
     {
 
-        require('./vendor/autoload.php');
+        require_once('./vendor/autoload.php');
         Config::load('.env');
+        require('./bootstrap/database.php');
     }    
     protected function setUp(): void
-    {
+    {        
+        DB::beginTransaction();
+        
+
         $reflection = new ReflectionClass(Request::class);
         $this->fileIn = $reflection->getProperty('fileIn');
         // アクセス許可
@@ -30,6 +36,11 @@ class DispatcherTest extends TestCase
         // アクセス許可
         $this->dispatcherRequest->setAccessible(true);
 
+        //token
+        $user = User::first();
+        $jwt = new JWT;
+        $tokenData = $jwt->get($user);
+
         $postData = ['id'=>1,'name'=>'hoge','role'=>'user'];
         $path = dirname(__FILE__) . "/files/data.json";
 
@@ -38,7 +49,7 @@ class DispatcherTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $accept = 'application/json';
         $_SERVER['HTTP_ACCEPT'] = $accept;
-        $token= "awefjiawepfoi";
+        $token= $tokenData['access_token'];
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
 
         $this->request = new Request();
@@ -48,7 +59,9 @@ class DispatcherTest extends TestCase
 
     }
     protected function tearDown(): void
-    {
+    {        
+        DB::rollback();
+        
        unset($this->request);
     }    
     public function testAddAction()
@@ -153,21 +166,20 @@ class DispatcherTest extends TestCase
     {
         $data = ['id'=>1,'name'=>'hoge','role'=>'admin'];
         
-        $apiMock = \Mockery::mock('overload:App\Api\Admin\UsersAPI');
-        $apiMock->shouldReceive('postAction')
-        ->andReturn($data);
+        $apiMock = \Mockery::mock('App\Api\Admin\UsersAPI');
+        $apiMock->shouldReceive('postAction')->once();
         
 
         $dispatcher = new Dispatcher($this->request);
         
         $expected = json_encode($data);
 
-        ob_start();
-        $dispatcher->send();
-        $json = ob_get_clean();
+        // ob_start();
+        $result = $dispatcher->send();
+        // $json = ob_get_clean();
 
-        $this->assertSame($expected,$json);
-
+        $this->assertNull($result);
+        
 
     }
 

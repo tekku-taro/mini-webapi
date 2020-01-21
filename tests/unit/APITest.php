@@ -4,25 +4,28 @@ use PHPUnit\Framework\TestCase;
 use Route\Request;
 use Bootstrap\Config;
 use Lib\AppCore\API;
+use Lib\JWT;
+use Lib\AppCore\DB;
+use App\Models\User;
+
 class APITest extends TestCase
 {
     public $request;
     public $fileIn;    
     public static function setUpBeforeClass(): void
     {
-
-        require('./vendor/autoload.php');
+        require_once('./vendor/autoload.php');
         Config::load('.env');
     }    
 
     public function setUp():void
     {
+
         $reflection = new ReflectionClass(Request::class);
         $this->fileIn = $reflection->getProperty('fileIn');
         // アクセス許可
         $this->fileIn->setAccessible(true);
-
-        $postData = ['id'=>1,'name'=>'hoge','role'=>'user'];
+      
         $path = dirname(__FILE__) . "/files/data.json";
 
         $_GET['url'] = 'admin/users/1';
@@ -30,13 +33,43 @@ class APITest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $accept = 'application/json';
         $_SERVER['HTTP_ACCEPT'] = $accept;
-        $token= "awefjiawepfoi";
-        $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
 
         $this->request = new Request();
         // 値の上書き
         $this->fileIn->setValue($this->request, $path);
         $this->request->parseURL();
+    }
+
+    protected function tearDown(): void
+    {        
+        // DB::rollback();
+        
+       unset($this->request);
+    } 
+
+    /**
+     * test__call
+     * 
+     * @runInSeparateProcess
+     * 
+     * @return void
+     */    
+    public function test__call()
+    {
+        $api = new extAPI($this->request);
+        $name = "someAction";
+        // resonse data
+        $responseData = ['action'=>'some with arg_value'];
+        
+        
+        $expected = json_encode($responseData);
+        
+        // メソッド実行       
+        ob_start();
+        $result = $api->__call($name, null);
+        $json = ob_get_clean();      
+
+        $this->assertEquals($expected,$json);        
     }
 
     public function testCallMethod()
@@ -57,30 +90,70 @@ class APITest extends TestCase
         $this->assertSame($message,$result);
     }
 
-    public function testCreateMethodParams()
+    public function testDivideParamsIntoTwo()
     {
         $api = new extAPI($this->request);
         $reflection = new ReflectionClass($api);
-        $method = $reflection->getMethod('createMethodParams');
+        $method = $reflection->getMethod('divideParamsIntoTwo');
 
         // アクセス許可
         $method->setAccessible(true);
 
         // メソッド実行
         $action = "afterFilter";
-        $params =['action'=>'Hoge','arguments'=>'1234','extra'=>'value']; 
- 
-        $result = $method->invoke($api,$action,$params);
+        $params =['action'=>'Hoge','arguments'=>'1234','extra'=>'value'];         
+        $result = $method->invoke($api,$action, $params);
         
-        $expected = ['Hoge','1234'];
-        $this->assertSame($expected,$result);
+        $expected = [['Hoge','1234'],['extra'=>'value']];
+        $this->assertSame($expected,$result);     
+        
+        $action = "afterFilter";
+        $params =['extra'=>'value'];         
+        $result = $method->invoke($api,$action, $params);
+        
+        $expected = [[null,null],['extra'=>'value']];
+        $this->assertSame($expected,$result);     
 
+
+    }
+
+
+    /**
+     * testSendBack
+     * 
+     * @runInSeparateProcess
+     * 
+     * @return void
+     */
+    public function testSendBack()
+    {
+        $api = new extAPI($this->request);
+        $reflection = new ReflectionClass($api);
+        $method = $reflection->getMethod('sendBack');
+
+        // アクセス許可
+        $method->setAccessible(true);
+
+        // resonse data
+        $responseData = ['msg'=>'success'];
+ 
+        
+        $expected = json_encode($responseData);
+        
+        ob_start();
+        $result = $method->invoke($api ,$responseData);
+        $json = ob_get_clean();      
+
+        $this->assertEquals($expected,$json);
     }
  
 }
 
 class extAPI extends API
 {
-
+    public function some($key)
+    {
+        return ['action'=>'some with arg_'.$key];
+    }
 }
 

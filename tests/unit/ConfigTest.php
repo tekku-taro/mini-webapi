@@ -8,7 +8,7 @@ class ConfigTest extends TestCase
     public static $property;
     public static function setUpBeforeClass(): void
     {
-        require("./bootstrap/Config.php");
+        require_once("./bootstrap/Config.php");
         $reflection = new ReflectionClass(Config::class);
         static::$property = $reflection->getProperty('data');
 

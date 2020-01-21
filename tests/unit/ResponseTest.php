@@ -9,7 +9,7 @@ class ResponseTest extends TestCase
     public static function setUpBeforeClass(): void
     {
 
-        require('./vendor/autoload.php');
+        require_once('./vendor/autoload.php');
         Config::load('.env');
     }
 

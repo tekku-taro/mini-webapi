@@ -8,15 +8,14 @@ use Lib\Auth;
 abstract class ResourceAPI extends API
 {
     protected $request;
-    protected $authHeader;
 
 
     protected function beforeFilter($action, $arguments)
     {
+        $apiName = get_class($this);
+        // return true;//debug
         if (isset($this->request->token)) {
-            $access = $this->request->token;
-            $apiName = get_class($this);
-            $session = Auth::validateToken($access, $apiName);
+            $session = Auth::validateToken($this->request->token, $apiName);
             if ($session) {
                 return true;
             }

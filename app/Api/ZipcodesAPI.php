@@ -6,83 +6,78 @@ use Lib\AppCore\ResourceAPI;
 
 class ZipcodesAPI extends ResourceAPI
 {
-
     public function getIndex($page)
     {
         if (!empty($page)) {
-            return (new Zipcode)->getPageRecords($page,$this->params);
+            return (new Zipcode)->getPageRecords($page, $this->params);
         } elseif (!empty($this->params)) {
-            return (new Zipcode)->getFromParams($this->params);            
+            return (new Zipcode)->getFromParams($this->params);
         } else {
             return Zipcode::all();
         }
-
     }
 
     public function get($id)
     {
         if (!empty($id)) {
             return Zipcode::find($id);
-        }else{
+        } else {
             return null;
         }
-
     }
 
     public function post()
     {
-        $errors = Zipcode::validate($this->request->data);
+        $zipcode = new Zipcode();
+        $errors = $zipcode->validate($this->request->data);
 
-        if(!empty($errors)){
+        if (!empty($errors)) {
             return ['errors'=>$errors];
         }
 
-        $zipcode = Zipcode::create($this->request->data);
-        if($zipcode){
+        $zipcode = $zipcode->fill($this->request->data);
+        if ($zipcode->save()) {
             return $zipcode;
-        }else{
+        } else {
             return $this->request->data;
-        }              
-
+        }
     }
     
     public function put($id)
     {
-
         $zipcode = Zipcode::find($id);
         
-        if(!$zipcode){
+        if (!$zipcode) {
             return $this->request->data;
         }
 
         $zipcode->fill($this->request->data);
 
-        $errors = Zipcode::validate($zipcode->toArray());
+        $errors = $zipcode->validate($zipcode->toArray());
 
-        if(!empty($errors)){
+        if (!empty($errors)) {
             return ['errors'=>$errors];
         }
 
-        if($zipcode->save()){
-            return Zipcode::find($id);
-        }else{
+        if ($zipcode->save()) {
+            return $zipcode;
+        } else {
             return $this->request->data;
         }
-
     }
 
     public function delete($id)
     {
         $zipcode = Zipcode::find($id);
         
-        if(!$zipcode){
+        if (!$zipcode) {
             return null;
         }
 
-        if($zipcode->delete()){
+        if ($zipcode->delete()) {
             return $zipcode;
-        }else{
+        } else {
             return $zipcode->toArray();
-        }        
+        }
     }
 }

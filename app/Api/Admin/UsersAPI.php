@@ -6,7 +6,6 @@ use App\Models\User;
 
 class UsersAPI extends ResourceAPI
 {
-
     public function getIndex($page)
     {
         if (!empty($page)) {
@@ -29,15 +28,16 @@ class UsersAPI extends ResourceAPI
 
     public function post()
     {
-        $errors = User::validate($this->request->data);
+        $user = new User();
+        $errors = $user->validate($this->request->data);
 
         if (!empty($errors)) {
             return ['errors'=>$errors];
         }
 
-        $User = User::create($this->request->data);
-        if ($User) {
-            return $User;
+        $user = $user->fill($this->request->data);
+        if ($user->save()) {
+            return $user;
         } else {
             return $this->request->data;
         }
@@ -45,22 +45,22 @@ class UsersAPI extends ResourceAPI
     
     public function put($id)
     {
-        $User = User::find($id);
+        $user = User::find($id);
         
-        if (!$User) {
+        if (!$user) {
             return $this->request->data;
         }
 
-        $User->fill($this->request->data);
+        $user->fill($this->request->data);
 
-        $errors = User::validate($User->toArray(),$User->id);
+        $errors = $user->validate($user->toArray(), $user->id);
 
-        if(!empty($errors)){
+        if (!empty($errors)) {
             return ['errors'=>$errors];
         }
 
-        if ($User->save()) {
-            return User::find($id);
+        if ($user->save()) {
+            return $user;
         } else {
             return $this->request->data;
         }
@@ -68,16 +68,16 @@ class UsersAPI extends ResourceAPI
 
     public function delete($id)
     {
-        $User = User::find($id);
+        $user = User::find($id);
         
-        if (!$User) {
+        if (!$user) {
             return null;
         }
 
-        if ($User->delete()) {
-            return $User;
+        if ($user->delete()) {
+            return $user;
         } else {
-            return $User->toArray();
+            return $user->toArray();
         }
     }
 }

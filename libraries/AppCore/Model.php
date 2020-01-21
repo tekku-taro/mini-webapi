@@ -40,14 +40,14 @@ trait Model
     }
 
 
-    public static function rules()
+    public function rules()
     {
         return [];
     }
 
-    public static function validate($data,$model_id = null)
+    public function validate($data, $model_id = null)
     {
-        $validator = new Validator(static::rules(), static::class,$model_id);
+        $validator = new Validator($this->rules(), get_class($this), $model_id);
         return $validator->validate($data);
     }
 }

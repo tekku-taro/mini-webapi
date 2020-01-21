@@ -23,7 +23,7 @@ class User extends Eloquent
 
 
 
-    public static function rules()
+    public function rules()
     {
         return[
             'name'=>["require","string","min"=>4,"unique"],
@@ -34,5 +34,26 @@ class User extends Eloquent
         ];
             
     }
+
+    public function save(array $options = [])
+    {
+       // before save code 
+       if(!empty($this->password)){
+            if(isset($this->id)){
+                if($this->isDirty('password')){
+                    // password has changed
+                    $this->password = password_hash($this->password,PASSWORD_DEFAULT);
+                }
+            }else{
+                $this->password = password_hash($this->password,PASSWORD_DEFAULT);
+            }
+       }
+
+       $result = parent::save($options); // returns boolean
+       // after save code
+       return $result; // do not ignore it eloquent calculates this value and returns this, not just to ignore
+ 
+    }
+
 
 }

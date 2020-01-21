@@ -27,7 +27,7 @@ class Auth
             return false;
         }
         // 3<attemptsならincrementして、false
-        if ($user->login_attempts > 3) {
+        if ($user->login_attempts >= 3) {
             $this->incrementLoginAttempts($user);
             return false;
         }
@@ -98,7 +98,7 @@ class Auth
             return false;
         }
         $timestamp = (new DateTime())->getTimestamp();
-        if($session->refresh_token_expiry > $timestamp){
+        if($session->refresh_token_expiry < $timestamp){
             return false;
         }
         

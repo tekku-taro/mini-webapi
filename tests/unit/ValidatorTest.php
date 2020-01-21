@@ -10,9 +10,9 @@ class ValidatorTest extends TestCase
     public static function setUpBeforeClass(): void
     {
 
-        require('./vendor/autoload.php');
+        require_once('./vendor/autoload.php');
         Config::load('.env');
-        require('./bootstrap/database.php');
+        require_once('./bootstrap/database.php');
     }
 
     protected function setUp(): void

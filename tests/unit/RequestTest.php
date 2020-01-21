@@ -9,7 +9,7 @@ class RequestTest extends TestCase
     public static function setUpBeforeClass(): void
     {
 
-        require('./vendor/autoload.php');
+        require_once('./vendor/autoload.php');
         Config::load('.env');
     }
 
@@ -57,8 +57,8 @@ class RequestTest extends TestCase
         $_GET['url'] = 'admin/users/1';
         $_GET['key'] = 'value';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $accept = 'application/json';
-        $_SERVER['HTTP_ACCEPT'] = $accept;
+        $accept = 'json';
+        $_SERVER['HTTP_ACCEPT'] = 'application/json';
         $token= "awefjiawepfoi";
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;        
 
@@ -70,7 +70,7 @@ class RequestTest extends TestCase
         print_r($request);
         $this->assertSame(['id'=>1,'key'=>'value'],$request->params);
         $this->assertSame('POST',$request->method);
-        $this->assertSame('users',$request->apiName);
+        $this->assertSame('users',$request->api);
         $this->assertSame($postData,$request->data);
         $this->assertTrue($request->isAdmin);
         $this->assertSame($token,$request->token);

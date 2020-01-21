@@ -8,22 +8,24 @@ class Session extends Eloquent
 {
     use Model;
 
-    public $timestamps = ['created_at'];
+    public $timestamps = ['updated_at','created_at'];
 
     protected $fillable =[
         'user_id',
+        'jti',
         'access_token',
         'refresh_token',
         'refresh_token_expiry',
         'invalidated',
+        'updated_at',
         'created_at'
     ];
 
-    public static function rules()
+    public function rules()
     {
         return [
             'user_id'=>["require","int"],
-            'access_token'=>["require","string"],
+            'access_token'=>["require"],
             'refresh_token'=>["require","string"],
             'refresh_token_expiry'=>["require","int"],
             'invalidated'=>["bool"],

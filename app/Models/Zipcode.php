@@ -15,7 +15,7 @@ class Zipcode extends Eloquent
         'address'
     ];
 
-    public static function rules()
+    public function rules()
     {
         return [
             'zipcode'=>["require","string","len"=>8],

@@ -49,16 +49,20 @@ class SessionsAPI extends API
             ];
         }
 
-        $access = explode(" ", $this->request->token)[1];
         // Auth::validateToken(token,session)
-        $session = Auth::validateToken($access, get_class($this));
+        $session = Auth::validateToken($this->request->token, get_class($this));
         if ($session) {
-            $session->delete();
-        } else {
-            return [
-                'status'=>'error',
-                'message'=>'Session delete error. You can not end the session.',
-            ];
+            if ($session->delete()) {
+                return [
+                    'status'=>'success',
+                    'message'=>'You have ended the session successfully.',
+                ];
+            }
         }
+
+        return [
+            'status'=>'error',
+            'message'=>'Session delete error. You can not end the session.',
+        ];
     }
 }

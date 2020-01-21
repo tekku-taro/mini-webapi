@@ -75,9 +75,6 @@ class Dispatcher
 
         // メソッドを呼び出し
         $apiObj->$action();
-
-
-
     }
 
 

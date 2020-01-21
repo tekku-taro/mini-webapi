@@ -4,13 +4,12 @@ use PHPUnit\Framework\TestCase;
 use Lib\AppCore\Response;
 use Bootstrap\Config;
 use Lib\Error;
-use Mockery\Undefined;
 
 class ErrorTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        require('./vendor/autoload.php');
+        require_once('./vendor/autoload.php');
         // 各種パス定数の定義
         if (!defined('DS')) {
             define('DS', DIRECTORY_SEPARATOR);
