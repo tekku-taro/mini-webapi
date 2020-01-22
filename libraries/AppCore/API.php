@@ -13,7 +13,6 @@ abstract class API
     public function __construct(Request $request)
     {
         $this->request = $request;
-
     }
 
 
@@ -55,7 +54,7 @@ abstract class API
         }
 
         list($args, $this->params) = $this->divideParamsIntoTwo($action, $params);
-        // var_dump($this->params);
+
         $response = call_user_func_array([$this,$action], $args);
 
         return $this->formatResponse($response, $action, $params);

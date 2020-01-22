@@ -13,7 +13,7 @@ abstract class ResourceAPI extends API
     protected function beforeFilter($action, $arguments)
     {
         $apiName = get_class($this);
-        // return true;//debug
+
         if (isset($this->request->token)) {
             $session = Auth::validateToken($this->request->token, $apiName);
             if ($session) {
@@ -36,7 +36,7 @@ abstract class ResourceAPI extends API
     {
         $id = null;
         $modelName = getModelNameFromAPI((new \ReflectionClass(static::class))->getShortName());
-        // var_dump($response);die();
+
         if ($response and !is_array($response)) {//処理成功
             if ($action === 'getIndex') {
                 return Response::formatData($modelName, $action, true, null, $response);

@@ -34,7 +34,7 @@ class Error
         } else {
             $response = static::generateErrorData($e, $code);
         }
-        // print_r($response);
+
         Response::json($response, $code);
     }
 

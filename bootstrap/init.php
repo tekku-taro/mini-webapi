@@ -13,7 +13,7 @@ ini_set('display_errors', 0);
 $logpath = LOG . DS .  (new DateTime())->format("Y-m-d") . ' error.log';
 ini_set('error_log', $logpath);
 
-// echo dirname(__DIR__);
+
 // composer autoload
 require(ROOT . DS . 'vendor/autoload.php');
 
@@ -21,11 +21,11 @@ require(ROOT . DS . 'vendor/autoload.php');
 
 set_error_handler("Lib\Error::errorHandler");
 set_exception_handler([(new Lib\Error),"exceptionHandler"]);
-// set_exception_handler("Lib\Error::exceptionHandler");
+
 
 // 設定ファイルの読込
 Bootstrap\Config::load(ROOT . DS .  '.env');
-// print_r(Config::all());
+
 
 
 // databaseへの接続
@@ -33,7 +33,7 @@ require(BOOTSTRAP . DS . 'database.php');
 
 //アプリの起動処理
 $request = (new Route\Request)->parseURL();
-// var_dump($request);
+
 $dispatcher = new Route\Dispatcher($request);
 
 

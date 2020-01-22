@@ -10,7 +10,7 @@ class JWT
     private $secret = "secret";
     private $algorithm = ['label'=>'HS256','algo'=>"sha256"];
     protected $jti;
-    protected $offset = 15 * 60;
+    protected $offset = 15 * 60;// 15分後
     
 
     public function get(User $user)
@@ -32,9 +32,6 @@ class JWT
                 'message'=>'Token generation error. Token could not be created.',
             ];
         }
-        // 'access_token':ACCESS_TOKEN,
-        // 'refresh_token':REFRESH_TOKEN,
-        // 'message':'you are authorized successfully.'
     }
 
     public function createRefresh(User $user, $acccessToken)
@@ -89,7 +86,7 @@ class JWT
     protected function getPayload(User $user)
     {
         $timestamp = $this->getTimestamp();
-        // 15分後
+        
         $expTimestamp = $this->getTimestamp($this->offset);
 
         // ペイロード作成
@@ -115,12 +112,12 @@ class JWT
 
     protected function base64UrlEncode($input)
     {
-        return str_replace(['+','/','='], ['-','_',''],base64_encode($input));
+        return str_replace(['+','/','='], ['-','_',''], base64_encode($input));
     }
        
     protected function base64UrlDecode($input)
     {
-        return base64_decode(str_replace( ['-','_'], ['+','/'],$input));
+        return base64_decode(str_replace(['-','_'], ['+','/'], $input));
     }
 
     protected function hashToken($token)
@@ -139,7 +136,7 @@ class JWT
         $tokenArray = explode(".", $token);
 
         // トークンの形式がおかしい
-        if(count($tokenArray) != 3){
+        if (count($tokenArray) != 3) {
             return false;
         }
 
