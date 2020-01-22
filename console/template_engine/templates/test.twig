@@ -1,0 +1,50 @@
+<?php
+{% include '/somefile' %}
+{% include "/otherfile" %}
+
+{% for person in users %}
+
+{{ person }} is selected.
+
+{% endfor %}
+
+{{ tag.name }}
+{{ tag.text }}
+
+{{ className }}
+
+{% if 2 % 2 == 0 %}
+print("true");
+{% endif %}
+
+{% if 4 % 4 == 1 %}
+print("none");
+{% endif %}
+
+{% if 2 % 2 == 0 %}
+print("true");
+{%else%}
+print("none");
+{% endif %}
+{{ getVar }}
+{% if 4 % 4 == 1 %}
+print("none");
+{%else%}
+print("false");
+{% endif %}
+
+{% if getVar == "user" %}
+print("getVar == user");
+{% endif %}
+
+{% if tag.name == "h1" %}
+print("tag.name == h1");
+{% endif %}
+
+{% if modelName == "wrongmodel" %}
+print("none");
+{%else%}
+print("modelName != wrongmodel");
+{% endif %}
+
+?>

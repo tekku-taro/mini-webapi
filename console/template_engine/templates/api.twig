@@ -1,0 +1,83 @@
+<?php
+namespace App\Api;
+
+use App\Models\{{ modelName }};
+use Lib\AppCore\ResourceAPI;
+
+class {{ className }} extends ResourceAPI
+{
+    public function getIndex($page)
+    {
+        if (!empty($page)) {
+            return (new {{ modelName }})->getPageRecords($page, $this->params);
+        } elseif (!empty($this->params)) {
+            return (new {{ modelName }})->getFromParams($this->params);
+        } else {
+            return {{ modelName }}::all();
+        }
+    }
+
+    public function get($id)
+    {
+        if (!empty($id)) {
+            return {{ modelName }}::find($id);
+        } else {
+            return null;
+        }
+    }
+
+    public function post()
+    {
+        ${{ varName }} = new {{ modelName }}();
+        $errors = ${{ varName }}->validate($this->request->data);
+
+        if (!empty($errors)) {
+            return ['errors'=>$errors];
+        }
+
+        ${{ varName }} = ${{ varName }}->fill($this->request->data);
+        if (${{ varName }}->save()) {
+            return ${{ varName }};
+        } else {
+            return $this->request->data;
+        }
+    }
+    
+    public function put($id)
+    {
+        ${{ varName }} = {{ modelName }}::find($id);
+        
+        if (!${{ varName }}) {
+            return $this->request->data;
+        }
+
+        ${{ varName }}->fill($this->request->data);
+
+        $errors = ${{ varName }}->validate(${{ varName }}->toArray());
+
+        if (!empty($errors)) {
+            return ['errors'=>$errors];
+        }
+
+        if (${{ varName }}->save()) {
+            return ${{ varName }};
+        } else {
+            return $this->request->data;
+        }
+    }
+
+    public function delete($id)
+    {
+        ${{ varName }} = {{ modelName }}::find($id);
+        
+        if (!${{ varName }}) {
+            return null;
+        }
+
+        if (${{ varName }}->delete()) {
+            return ${{ varName }};
+        } else {
+            return ${{ varName }}->toArray();
+        }
+    }
+}

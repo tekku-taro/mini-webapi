@@ -13,7 +13,8 @@
             "App\\":"app",
             "Lib\\":"libraries",
             "Route\\":"route",
-            "Bootstrap\\":"bootstrap"
+            "Bootstrap\\":"bootstrap",
+            "Engine\\":"console/template_engine/engine"
         },
         "files": [ "libraries/HelperFunctions.php" ]
     },
