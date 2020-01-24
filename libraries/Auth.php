@@ -10,14 +10,14 @@ class Auth
 {
     public function verifyCredentials($name, $password)
     {
-        if(empty($name) or empty($password)){
+        if (empty($name) or empty($password)) {
             return false;
         }
 
         // user = User::findOne(name)
         $user = User::where('name', $name)->first();
 
-        if(!$user){
+        if (!$user) {
             return false;
         }
 
@@ -63,50 +63,43 @@ class Auth
 
 
     // トークンの検証
-    public static function validateToken($token,$apiName)
+    public static function validateToken($token, $apiName)
     {
         $jwt = new JWT;
         // ユーザー管理(admin)：
-        if($apiName === 'UsersAPI'){
+        if ($apiName === 'UsersAPI') {
             // 有効なトークンか・管理者か
-            $result = $jwt->validate($token,true);
-        }else{
+            $result = $jwt->validate($token, true);
+        } else {
             // サービス(zipcodes/session)：
             // 有効なトークンかJWT::validate()
-            $result = $jwt->validate($token,false);
-
+            $result = $jwt->validate($token, false);
         }
         // 結果(session/false)を返す
         return $result;
-        
     }
         
-    public static function validateRefreshToken($access,$refresh)
+    public static function validateRefreshToken($refresh)
     {
-        // refreshTokenで検索し、accessTokenが合っているか、invalidatedか、期限内か確認
+        // refreshTokenで検索し、invalidatedか、期限内か確認
         $sessions = Session::where('refresh_token', $refresh)->get();
 
-        if($sessions->count() !== 1){
+        if ($sessions->count() !== 1) {
             return false;
         }
         
         $session = $sessions->first();
-        if($session->access_token !== $access){
-            return false;
-        }
-        if($session->invalidated){
+ 
+        
+        if ($session->invalidated) {
             return false;
         }
         $timestamp = (new DateTime())->getTimestamp();
-        if($session->refresh_token_expiry < $timestamp){
+        if ($session->refresh_token_expiry < $timestamp) {
             return false;
         }
-        
-
 
         // 結果(session/false)を返す
         return $session;
     }
-    
-    
 }

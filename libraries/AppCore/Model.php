@@ -5,7 +5,7 @@ use Lib\Validator;
 
 trait Model
 {
-    public $numPerPage = 2;
+    public $numPerPage = 15;
 
     public function getPageRecords($page, $params = [])
     {
@@ -24,7 +24,7 @@ trait Model
     {
         $whereData = $this->createWhereData($params, $this->fillable);
 
-        return $this->where($whereData)->get();
+        return $this->where($whereData)->limit(1000)->get();
     }
 
     public function createWhereData($params, $fillable)

@@ -11,7 +11,7 @@ class Model
 
     public function __construct($table)
     {
-        if(!is_null(static::$db)){
+        if (!is_null(static::$db)) {
             return;
         }
 

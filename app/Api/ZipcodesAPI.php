@@ -13,7 +13,7 @@ class ZipcodesAPI extends ResourceAPI
         } elseif (!empty($this->params)) {
             return (new Zipcode)->getFromParams($this->params);
         } else {
-            return Zipcode::all();
+            return Zipcode::limit(1000)->get();
         }
     }
 

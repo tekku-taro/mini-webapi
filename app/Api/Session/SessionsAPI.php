@@ -24,7 +24,7 @@ class SessionsAPI extends API
 
     public function refresh()
     {
-        if (!isset($this->request->token) or !isset($this->request->data['access_token'])) {
+        if (!isset($this->request->token)) {
             return [
                 'status'=>'error',
                 'message'=>'Token refresh error. Token could not get refreshed.',
@@ -32,12 +32,20 @@ class SessionsAPI extends API
         }
 
         $refresh = $this->request->token;
-        $access = $this->request->data['access_token'];
+        
         // リフレッシュトークンの検証
-        $session = Auth::validateRefreshToken($access, $refresh);
-        // 更新したトークンを返す
-        $jwt = new JWT;
-        return $jwt->refresh($session->id);
+        $session = Auth::validateRefreshToken($refresh);
+
+        if ($session === false) {
+            return [
+                'status'=>'error',
+                'message'=>'Token refresh error. Token could not get refreshed.',
+            ];
+        } else {
+            // 更新したトークンを返す
+            $jwt = new JWT;
+            return $jwt->refresh($session->id);
+        }
     }
     
     public function logout()
