@@ -1,7 +1,7 @@
 <?php
 namespace App\Api;
 
-use App\Models\Sample;
+use App\Models\Session;
 use Lib\AppCore\ResourceAPI;
 
 class SamplesAPI extends ResourceAPI
@@ -9,18 +9,18 @@ class SamplesAPI extends ResourceAPI
     public function getIndex($page)
     {
         if (!empty($page)) {
-            return (new Sample)->getPageRecords($page, $this->params);
+            return (new Session)->getPageRecords($page, $this->params);
         } elseif (!empty($this->params)) {
-            return (new Sample)->getFromParams($this->params);
+            return (new Session)->getFromParams($this->params);
         } else {
-            return Sample::all();
+            return Session::all();
         }
     }
 
     public function get($id)
     {
         if (!empty($id)) {
-            return Sample::find($id);
+            return Session::find($id);
         } else {
             return null;
         }
@@ -28,16 +28,16 @@ class SamplesAPI extends ResourceAPI
 
     public function post()
     {
-        $sample = new Sample();
-        $errors = $sample->validate($this->request->data);
+        $session = new Session();
+        $errors = $session->validate($this->request->data);
 
         if (!empty($errors)) {
             return ['errors'=>$errors];
         }
 
-        $sample = $sample->fill($this->request->data);
-        if ($sample->save()) {
-            return $sample;
+        $session = $session->fill($this->request->data);
+        if ($session->save()) {
+            return $session;
         } else {
             return $this->request->data;
         }
@@ -45,22 +45,22 @@ class SamplesAPI extends ResourceAPI
     
     public function put($id)
     {
-        $sample = Sample::find($id);
+        $session = Session::find($id);
         
-        if (!$sample) {
+        if (!$session) {
             return $this->request->data;
         }
 
-        $sample->fill($this->request->data);
+        $session->fill($this->request->data);
 
-        $errors = $sample->validate($sample->toArray());
+        $errors = $session->validate($session->toArray());
 
         if (!empty($errors)) {
             return ['errors'=>$errors];
         }
 
-        if ($sample->save()) {
-            return $sample;
+        if ($session->save()) {
+            return $session;
         } else {
             return $this->request->data;
         }
@@ -68,16 +68,16 @@ class SamplesAPI extends ResourceAPI
 
     public function delete($id)
     {
-        $sample = Sample::find($id);
+        $session = Session::find($id);
         
-        if (!$sample) {
+        if (!$session) {
             return null;
         }
 
-        if ($sample->delete()) {
-            return $sample;
+        if ($session->delete()) {
+            return $session;
         } else {
-            return $sample->toArray();
+            return $session->toArray();
         }
     }
 }

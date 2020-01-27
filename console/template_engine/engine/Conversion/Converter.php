@@ -54,16 +54,18 @@ class Converter
 
     protected function insertColumns()
     {
-        if($this->template != 'model'){
+        if ($this->template != 'model') {
             return;
         }
 
         $model = new Model($this->getTableName($this->vars['modelName']));
         $columns = $model->getTableColumns();
 
-        $this->vars['fillable'] = implode(", ",$columns);
-        $columns = array_map(function($column){ return $column . "=>[]"; },$columns);
-        $this->vars['rules'] = implode("," . PHP_EOL . "            ",$columns);
+        $this->vars['fillable'] = implode(", ", $columns);
+        $columns = array_map(function ($column) {
+            return $column . "=>[]";
+        }, $columns);
+        $this->vars['rules'] = implode("," . PHP_EOL . "            ", $columns);
     }
 
     protected function getTableName($modelName)
@@ -73,9 +75,9 @@ class Converter
 
     protected function getVarValue($identifier)
     {
-        if(isset($this->vars[$identifier])){
+        if (isset($this->vars[$identifier])) {
             return $this->vars[$identifier];
-        }else{
+        } else {
             return "no $identifier variable";
         }
     }
@@ -83,7 +85,7 @@ class Converter
     protected function insertVars()
     {
         foreach ($this->vars as $identifier => $value) {
-            if (is_string($value)) {
+            if (!is_array($value)) {
                 $this->content = preg_replace("/\{\{\s*".$identifier."\s*\}\}/", $value, $this->content);
             } else {
                 //    'tag'=>['name'=>'h1','text'=>'My Blog']
@@ -146,7 +148,7 @@ class Converter
             $condition = $matches[1][$i];
             $trueVal = $matches[2][$i];
 
-            $condition = $this->insertVarsInCodeBlock($condition);
+            $condition = $this->insertVarsInCodeBlock($condition, "'");
             $result = $this->executeCodeBlock($condition);
 
             if ($result) {
@@ -171,7 +173,7 @@ class Converter
             $trueVal = $matches[2][$i];
             $falseVal = $matches[3][$i];
 
-            $condition = $this->insertVarsInCodeBlock($condition);
+            $condition = $this->insertVarsInCodeBlock($condition, "'");
             $result = $this->executeCodeBlock($condition);
 
             if ($result) {
@@ -205,24 +207,23 @@ class Converter
             $blockInForLoop = "";
 
             foreach ($itemsValue as $key => $value) {
-                $blockInForLoop .= $stmt. PHP_EOL;
-                // $blockInForLoop .= $this->insertVarInStmt($stmt, $item, $value). PHP_EOL;
+                $blockInForLoop .= $this->insertVarInStmt($stmt, $item, $value). PHP_EOL;
             }
 
             $this->content = str_replace($matches[0][$i], $blockInForLoop, $this->content);
         }
     }
 
-    protected function insertVarsInCodeBlock($content)
+    protected function insertVarsInCodeBlock($content, $quote = "")
     {
         foreach ($this->vars as $identifier => $value) {
-            if (is_string($value)) {
-                $content = str_replace($identifier, "'". $value ."'", $content);
+            if (!is_array($value)) {
+                $content = str_replace($identifier, $quote. $value .$quote, $content);
             } else {
                 //    'tag'=>['name'=>'h1','text'=>'My Blog']
                 foreach ($value as $key => $keyVal) {
                     if (!is_numeric($key)) {
-                        $content = str_replace($identifier . "." . $key, "'". $keyVal ."'", $content);
+                        $content = str_replace($identifier . "." . $key, $quote. $keyVal .$quote, $content);
                     }
                 }
             }
@@ -231,9 +232,20 @@ class Converter
     }
 
 
-    protected function insertVarInStmt($content, $identifier, $value)
+    protected function insertVarInStmt($content, $identifier, $value, $quote = "")
     {
-        return preg_replace("/{{\s*$identifier\s*}}/", $value, $content);
+        if (!is_array($value)) {
+            $content = preg_replace("/\{\{\s*".$identifier."\s*\}\}/", $quote. $value .$quote, $content);
+        } else {
+            //    'tag'=>['name'=>'h1','text'=>'My Blog']
+            foreach ($value as $key => $keyVal) {
+                if (!is_numeric($key)) {
+                    $content = preg_replace("/{{\s*".$identifier."\.".$key."\s*}}/", $quote. $keyVal .$quote, $content);
+                }
+            }
+        }
+
+        return $content;
     }
 
     protected function executeCodeBlock($codeBlock)

@@ -202,10 +202,12 @@ function get($zipcode)
 # 方法１：maker.batを実行
 console/maker.bat make:api ZipcodesAPI
 console/maker.bat make:model Zipcode # データベース内にzipcodesというテーブルがあることが前提
+console/maker.bat make:api SessionsAPI -m User # [-m modelName] オプションで利用するモデルを変更可
 
 # 方法２：maker.shを実行
 console/maker.sh make:api ZipcodesAPI
 console/maker.sh make:model Zipcode # データベース内にzipcodesというテーブルがあることが前提
+console/maker.sh make:api SessionsAPI -m User # [-m modelName] オプションで利用するモデルを変更可
 
 ```
 

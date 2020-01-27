@@ -7,7 +7,7 @@ use PDO;
 class Model
 {
     protected static $db;
-    protected $table;
+    protected static $table;
 
     public function __construct($table)
     {
@@ -16,7 +16,7 @@ class Model
         }
 
         Config::load(ROOT . "/.env");
-        $this->table = $table;
+        static::$table = $table;
         $this->setInstance();
     }
 
@@ -29,17 +29,28 @@ class Model
             static::$db = new PDO($dsn, Config::get("DB_USER"), Config::get("DB_PASS"), $options);
             static::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $e) {
-            throw new \ErrorException($e->getMessage());
+            echo $e->getMessage();
+            exit;
+            // throw new \ErrorException($e->getMessage());
         }
     }
 
     public function getTableColumns()
-    {
-        $rs = static::$db->query('SELECT * FROM '.$this->table.' LIMIT 0');
-        for ($i = 0; $i < $rs->columnCount(); $i++) {
-            $col = $rs->getColumnMeta($i);
-            $columns[] ="'". $col['name'] ."'";
+    {   
+        try {
+            $querystring = 'SELECT * FROM '.static::$table.' LIMIT 0;';
+    
+            $rs = static::$db->query($querystring);
+            for ($i = 0; $i < $rs->columnCount(); $i++) {
+                $col = $rs->getColumnMeta($i);
+                $columns[] ="'". $col['name'] ."'";
+            }
+            return $columns;
+            
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+            exit;
+            // throw new \ErrorException($e->getMessage());
         }
-        return $columns;
     }
 }
