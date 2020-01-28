@@ -22,7 +22,6 @@ class ResourceAPITest extends TestCase
         require_once('./vendor/autoload.php');
         Config::load('.env');
         require('./bootstrap/database.php');
-
     }
 
 
@@ -50,44 +49,40 @@ class ResourceAPITest extends TestCase
 
     public function tearDown():void
     {
-        
         DB::rollback();
     }
 
     /**
      * testBeforeFilter function
-     * 
+     *
      * @runInSeparateProcess
      *
      * @return void
      */
     public function testBeforeFilter()
     {
-
         $reflection = new ReflectionClass(ResourceAPI::class);
         $method = $reflection->getMethod('beforeFilter');
         // アクセス許可
-        $method->setAccessible(true);  
+        $method->setAccessible(true);
 
         $action = "post";
-        $arguments = "";
+        $arguments = [];
         // トークンあり
         $this->tokenProp->setValue($this->request, $this->token);
-        $result = $method->invoke($this->api,$action, $arguments);
+        $result = $method->invoke($this->api, $action, $arguments);
         // $result = $this->api->beforeFilter($action, $arguments);
         $this->assertTrue($result);
 
         // トークンなし
-        $this->tokenProp->setValue($this->request, null);        
-        $result = $method->invoke($this->api,$action, $arguments);
+        $this->tokenProp->setValue($this->request, null);
+        $result = $method->invoke($this->api, $action, $arguments);
         $this->assertFalse($result);
 
         // 無効なトークン
-        $this->tokenProp->setValue($this->request, $this->token."WRONG");      
-        $result = $method->invoke($this->api,$action, $arguments);
+        $this->tokenProp->setValue($this->request, $this->token."WRONG");
+        $result = $method->invoke($this->api, $action, $arguments);
         $this->assertFalse($result);
-
-
     }
 
     public function testFormatResponse()
@@ -95,13 +90,13 @@ class ResourceAPITest extends TestCase
         $jwtMock = \Mockery::mock('overload:Lib\AppCore\Response');
         $jwtMock->shouldReceive('formatData')
         ->andReturnUsing(function ($modelName, $action, $success, $id, $response) {
-            if($success){
-                if($id){
+            if ($success) {
+                if ($id) {
                     return "action is success.";
-                }else{
+                } else {
                     return "getIndex is success.";
                 }
-            }else{
+            } else {
                 return "failure response";
             }
         });
@@ -109,33 +104,29 @@ class ResourceAPITest extends TestCase
         $reflection = new ReflectionClass(ResourceAPI::class);
         $method = $reflection->getMethod('formatResponse');
         // アクセス許可
-        $method->setAccessible(true); 
+        $method->setAccessible(true);
 
         $response = new stdClass();
         $response->id = 1;
         $action = "post";
         $params = "";
 
-        $result = $method->invoke($this->api,$response, $action, $params);
+        $result = $method->invoke($this->api, $response, $action, $params);
         $expected = "action is success.";
-        $this->assertSame($expected,$result);
+        $this->assertSame($expected, $result);
 
         $action = "getIndex";
-        $result = $method->invoke($this->api,$response, $action, $params);
+        $result = $method->invoke($this->api, $response, $action, $params);
         $expected = "getIndex is success.";
-        $this->assertSame($expected,$result);
+        $this->assertSame($expected, $result);
 
         $response = ["failure"];
-        $result = $method->invoke($this->api,$response, $action, $params);
+        $result = $method->invoke($this->api, $response, $action, $params);
         $expected = "failure response";
-        $this->assertSame($expected,$result);
-
-
+        $this->assertSame($expected, $result);
     }
-
 }
 
 class ConcreteAPI extends ResourceAPI
 {
-
 }

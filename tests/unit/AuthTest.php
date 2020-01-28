@@ -141,7 +141,6 @@ class AuthTest extends TestCase
         $sessData =[
         ["user_id"=>"1", "jti"=>uniqid(), "access_token"=>"ACCESS", "refresh_token"=>"REFRESH", "refresh_token_expiry"=>$future, "invalidated"=>false],
         ["user_id"=>"1", "jti"=>uniqid(), "access_token"=>"ACCESS", "refresh_token"=>"REFRESH2", "refresh_token_expiry"=>$past, "invalidated"=>false],
-        ["user_id"=>"1", "jti"=>uniqid(), "access_token"=>"ACCESS", "refresh_token"=>"REFRESH3", "refresh_token_expiry"=>$future, "invalidated"=>true],
         ["user_id"=>"1", "jti"=>uniqid(), "access_token"=>"ACCESS", "refresh_token"=>"REFRESH4", "refresh_token_expiry"=>$future, "invalidated"=>false],
         [],
         ];
@@ -150,8 +149,7 @@ class AuthTest extends TestCase
             [$sessData[0],"ACCESS","REFRESH",Session::class],
             [$sessData[1],"ACCESS","REFRESH2",false],
             [$sessData[2],"ACCESS","REFRESH3",false],
-            [$sessData[3],"WRONG_ACCESS","REFRESH4",false],
-            [$sessData[4],"ACCESS","REFRESH5",false],
+            [$sessData[3],"ACCESS","REFRESH5",false],
         ];
     }
 
@@ -159,26 +157,26 @@ class AuthTest extends TestCase
      * testValidateRefreshToken function
      *
      * @dataProvider provideValidateRefreshTokenData
-     * 
+     *
      * @param array $sessData
      * @param string $access
      * @param string $refresh
      * @param mixed $return session/false
      * @return void
      */
-    public function testValidateRefreshToken($sessData,$access,$refresh,$return)
+    public function testValidateRefreshToken($sessData, $access, $refresh, $return)
     {
         // print("test refresh");
-        if(!empty($sessData)){
+        if (!empty($sessData)) {
             $session = Session::create($sessData);
         }
 
-        $result = $this->auth->validateRefreshToken($access, $refresh);
+        $result = $this->auth->validateRefreshToken($refresh);
 
-        if($result === false){
-            $this->assertEquals($return,$result);
-        }else{
-            $this->assertInstanceOf($return,$result);
+        if ($result === false) {
+            $this->assertEquals($return, $result);
+        } else {
+            $this->assertInstanceOf($return, $result);
         }
     }
 }

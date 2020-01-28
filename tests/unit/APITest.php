@@ -11,16 +11,15 @@ use App\Models\User;
 class APITest extends TestCase
 {
     public $request;
-    public $fileIn;    
+    public $fileIn;
     public static function setUpBeforeClass(): void
     {
         require_once('./vendor/autoload.php');
         Config::load('.env');
-    }    
+    }
 
     public function setUp():void
     {
-
         $reflection = new ReflectionClass(Request::class);
         $this->fileIn = $reflection->getProperty('fileIn');
         // アクセス許可
@@ -41,19 +40,19 @@ class APITest extends TestCase
     }
 
     protected function tearDown(): void
-    {        
+    {
         // DB::rollback();
         
-       unset($this->request);
-    } 
+        unset($this->request);
+    }
 
     /**
      * test__call
-     * 
+     *
      * @runInSeparateProcess
-     * 
+     *
      * @return void
-     */    
+     */
     public function test__call()
     {
         $api = new extAPI($this->request);
@@ -64,30 +63,29 @@ class APITest extends TestCase
         
         $expected = json_encode($responseData);
         
-        // メソッド実行       
+        // メソッド実行
         ob_start();
-        $result = $api->__call($name, null);
-        $json = ob_get_clean();      
+        $result = $api->__call($name, []);
+        $json = ob_get_clean();
 
-        $this->assertEquals($expected,$json);        
+        $this->assertEquals($expected, $json);
     }
 
     public function testCallMethod()
     {
-        $message = "[afterFilter]";
+        $api = new extAPI($this->request);
+        $expected = ['action'=>'some with arg_test'];
 
-        $mock = \Mockery::mock(API::class)->makePartial()
-        ->shouldAllowMockingProtectedMethods();        
-        // afterFilter() のモックメソッド定義
-        $mock->shouldReceive('afterFilter')
-        ->andReturn($message);
+        $mock = \Mockery::mock($api)
+        ->shouldAllowMockingProtectedMethods();
 
-        $action = "afterFilter";$params =[];
+        $action = "some";
+        $params =["key"=>"test"];
         // メソッド実行
 
-        $result = $mock->callMethod($action,$params);
+        $result = $mock->callMethod($action, $params);
 
-        $this->assertSame($message,$result);
+        $this->assertSame($expected, $result);
     }
 
     public function testDivideParamsIntoTwo()
@@ -101,28 +99,26 @@ class APITest extends TestCase
 
         // メソッド実行
         $action = "afterFilter";
-        $params =['action'=>'Hoge','arguments'=>'1234','extra'=>'value'];         
-        $result = $method->invoke($api,$action, $params);
+        $params =['name'=>'Hoge','arguments'=>'1234','extra'=>'value'];
+        $result = $method->invoke($api, $action, $params);
         
         $expected = [['Hoge','1234'],['extra'=>'value']];
-        $this->assertSame($expected,$result);     
+        $this->assertSame($expected, $result);
         
         $action = "afterFilter";
-        $params =['extra'=>'value'];         
-        $result = $method->invoke($api,$action, $params);
+        $params =['extra'=>'value'];
+        $result = $method->invoke($api, $action, $params);
         
         $expected = [[null,null],['extra'=>'value']];
-        $this->assertSame($expected,$result);     
-
-
+        $this->assertSame($expected, $result);
     }
 
 
     /**
      * testSendBack
-     * 
+     *
      * @runInSeparateProcess
-     * 
+     *
      * @return void
      */
     public function testSendBack()
@@ -141,12 +137,11 @@ class APITest extends TestCase
         $expected = json_encode($responseData);
         
         ob_start();
-        $result = $method->invoke($api ,$responseData);
-        $json = ob_get_clean();      
+        $result = $method->invoke($api, $responseData);
+        $json = ob_get_clean();
 
-        $this->assertEquals($expected,$json);
+        $this->assertEquals($expected, $json);
     }
- 
 }
 
 class extAPI extends API
@@ -156,4 +151,3 @@ class extAPI extends API
         return ['action'=>'some with arg_'.$key];
     }
 }
-
