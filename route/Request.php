@@ -3,22 +3,100 @@ namespace Route;
 
 use Bootstrap\Config;
 
+/**
+ * Request class
+ * リクエストデータを処理
+ */
 class Request
 {
+    /**
+     * url文字列
+     *
+     * @var string
+     */
     public $url;
+
+    /**
+     * api名
+     *
+     * @var string
+     */
     public $api;
+
+    /**
+     * 管理者向けapiか
+     *
+     * @var boolean
+     */
     public $isAdmin = false;
+
+    /**
+     * 認証用apiか
+     *
+     * @var boolean
+     */
     public $isSession = false;
-    protected $apiTypes;
+
+    /**
+     * システムで提供するAPIリスト
+     *
+     * @var array
+     */
+    protected $apiTypes = [];
+
+    /**
+     * リクエストメソッド GET/POST/PUT/DELETE
+     *
+     * @var string
+     */
     public $method;
+
+    /**
+     * パラメータ配列
+     *
+     * @var array
+     */
     public $params = [];
+
+    /**
+     * リクエストボディのデータ
+     *
+     * @var array
+     */
     public $data;
+
+    /**
+     * jwtトークン文字列
+     *
+     * @var string
+     */
     public $token;
+
+    /**
+     * HTTP_ACCEPT の簡略形 xml/json
+     *
+     * @var string
+     */
     public $accept;
 
+    /**
+     * 読み込み用のストリーム
+     * リクエストボディから生のデータを読み込む
+     *
+     * @var string
+     */
     protected $fileIn = 'php://input';
+
+    /**
+     * システムで利用可能なMIMEタイプ
+     *
+     * @var array
+     */
     protected $supportedTypes = ['xml'=>['text/xml','application/xml'],'json'=>['application/json']];
 
+    /**
+     * url、リクエストメソッド、APIタイプの設定
+     */
     public function __construct()
     {
         if (isset($_GET['url'])) {
@@ -31,9 +109,13 @@ class Request
         $this->apiTypes = Config::get('API');
         
         $this->method = $_SERVER['REQUEST_METHOD'];
-        // print($this->url);exit;
     }
 
+    /**
+     * リクエストデータを分解して各変数に保存
+     *
+     * @return void
+     */
     public function parseURL()
     {
         // urlをsanitizeして、右端の/を削除
@@ -58,20 +140,17 @@ class Request
                     array_shift($url);
                 }
             } else {
-
-                throw new \ErrorException("page not found.",404);                
-
+                throw new \ErrorException("page not found.", 404);
             }
         } else {
-            throw new \ErrorException("page not found.",404);                
-
+            throw new \ErrorException("page not found.", 404);
         }
         // id or page
         if (isset($url[0])) {
             if (ctype_digit($url[0])) {
                 $this->params['id'] = intval($url[0]);
             } elseif ($url[0] === 'page') {
-                if(isset($url[1]) and ctype_digit($url[1])){
+                if (isset($url[1]) and ctype_digit($url[1])) {
                     $this->params['page'] = intval($url[1]);
                 }
             }
@@ -105,6 +184,12 @@ class Request
         return $this;
     }
 
+    /**
+     * リクエストボディのjsonデータまたはxmlデータを配列に変換
+     *
+     * @param mixed $data
+     * @return mixed
+     */
     protected function convPostData($data)
     {
         // request bodyにより配列に変換

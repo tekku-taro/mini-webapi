@@ -4,19 +4,47 @@ namespace Lib\AppCore;
 use Route\Request;
 use Lib\AppCore\Response;
 
+/**
+ * API class
+ * 全てのAPIクラスの親クラス
+ */
 abstract class API
 {
+    /**
+     * リクエストオブジェクト
+     *
+     * @var Request
+     */
     protected $request;
-    protected $authHeader;
+
+    /**
+     * パラメータ配列
+     *
+     * @var array
+     */
     protected $params;
 
+    /**
+     * リクエストオブジェクトを取得
+     *
+     * @param Request $request
+     */
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
 
-    public function __call($name, $arguments)
+    /**
+     * アクションを呼び出すときに最初に呼ばれる
+     * beforeFilter, アクション, afterFilterを順に呼び出し、
+     * 最後にsendBackに返されたデータを渡す
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return void
+     */
+    public function __call(string $name, array $arguments)
     {
         $action = str_replace("Action", "", $name);
 
@@ -35,18 +63,38 @@ abstract class API
         $this->sendBack($responseData);
     }
 
-    protected function beforeFilter($action, $arguments)
+    /**
+     * アクションの前処理
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return boolean true/false 処理の結果
+     */
+    protected function beforeFilter(string $name, array $arguments)
     {
-        // print(" [beforeFilter] ");
         return true;
     }
 
-    protected function afterFilter($action, $arguments)
+    /**
+     * アクションの後処理
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return boolean true/false 処理の結果
+     */
+    protected function afterFilter(string $name, array $arguments)
     {
-        // print(" [afterFilter] ");
         return true;
     }
 
+    /**
+     * アクション関数に引数を渡して呼び出し、
+     * 戻り値をフォーマットして返す
+     *
+     * @param string $action
+     * @param array $params
+     * @return void
+     */
     protected function callMethod($action, $params)
     {
         if (!method_exists($this, $action)) {
@@ -60,11 +108,27 @@ abstract class API
         return $this->formatResponse($response, $action, $params);
     }
 
+    /**
+     * リスポンスデータのフォーマット用関数
+     *
+     * @param array $response
+     * @param string $action
+     * @param array $params
+     * @return void
+     */
     protected function formatResponse($response, $action, $params)
     {
         return $response;
     }
 
+    /**
+     * 呼び出されるアクション関数の引数が$paramsにあれば
+     * $argsに格納し、$paramsの残りとともに返す
+     *
+     * @param string $action
+     * @param array $params
+     * @return void
+     */
     protected function divideParamsIntoTwo($action, $params)
     {
         $reflectionMethod = new \ReflectionMethod($this, $action);
@@ -82,6 +146,12 @@ abstract class API
     }
 
 
+    /**
+     * API処理の結果をjsonかxmlの形式でクライアントに送信
+     *
+     * @param array $responseData
+     * @return void
+     */
     protected function sendBack($responseData)
     {
         // acceptによって、

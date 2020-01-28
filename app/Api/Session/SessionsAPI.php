@@ -5,8 +5,20 @@ use Lib\AppCore\API;
 use Lib\Auth;
 use Lib\JWT;
 
+/**
+ * SessionsAPI class
+ *
+ * 認証APIとして、ユーザー認証、更新、セッション終了を行う
+ */
 class SessionsAPI extends API
 {
+    /**
+     * login アクション
+     *
+     * ユーザー認証を行い、jwtトークンを返す
+     *
+     * @return array
+     */
     public function login()
     {
         // postdataからname,passwordを取得し、Auth::verifyCredentials()
@@ -22,6 +34,13 @@ class SessionsAPI extends API
         }
     }
 
+    /**
+     * refresh アクション
+     *
+     * リフレッシュトークンを検証し、更新したjwtトークンを返す
+     *
+     * @return array
+     */
     public function refresh()
     {
         if (!isset($this->request->token)) {
@@ -47,7 +66,14 @@ class SessionsAPI extends API
             return $jwt->refresh($session->id);
         }
     }
-    
+
+    /**
+     * logout アクション
+     *
+     * セッションを終了する
+     *
+     * @return array
+     */
     public function logout()
     {
         if (!isset($this->request->token)) {

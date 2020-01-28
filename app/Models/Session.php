@@ -4,6 +4,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Lib\AppCore\Model;
 
+/**
+ * Session class
+ * Sessionモデルのクラス
+ * sessions tableに対応
+ */
 class Session extends Eloquent
 {
     use Model;
@@ -21,6 +26,11 @@ class Session extends Eloquent
         'created_at'
     ];
 
+    /**
+     * Sessionモデルのvalidationルール
+     *
+     * @return array $validationRules
+     */
     public function rules()
     {
         return [

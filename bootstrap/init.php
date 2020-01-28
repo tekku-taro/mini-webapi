@@ -1,4 +1,5 @@
 <?php
+//システムの起動処理
 
 // 各種パス定数の定義
 define('DS', DIRECTORY_SEPARATOR);
@@ -18,7 +19,6 @@ ini_set('error_log', $logpath);
 require(ROOT . DS . 'vendor/autoload.php');
 
 // error handling
-
 set_error_handler("Lib\Error::errorHandler");
 set_exception_handler([(new Lib\Error),"exceptionHandler"]);
 
@@ -31,7 +31,7 @@ Bootstrap\Config::load(ROOT . DS .  '.env');
 // databaseへの接続
 require(BOOTSTRAP . DS . 'database.php');
 
-//アプリの起動処理
+//リクエストの処理とAPIへの送信
 $request = (new Route\Request)->parseURL();
 
 $dispatcher = new Route\Dispatcher($request);

@@ -1,8 +1,19 @@
 <?php
 namespace Lib\AppCore;
 
+/**
+ * Response class
+ * リスポンスデータ処理用クラス
+ */
 class Response
 {
+    /**
+     * データをjsonフォーマットに変換してクライアントに返す
+     *
+     * @param mixed $data
+     * @param integer $statusCode
+     * @return void
+     */
     public static function json($data, $statusCode = 200)
     {
         // jsonデータでデータを返す
@@ -11,6 +22,13 @@ class Response
         print(json_encode($data));
     }
     
+    /**
+     * データをxmlフォーマットに変換してクライアントに返す
+     *
+     * @param mixed $data
+     * @param integer $statusCode
+     * @return void
+     */
     public static function xml($data, $statusCode = 200)
     {
         // xmlデータで返す
@@ -21,17 +39,32 @@ class Response
         print($xml);
     }
     
+    /**
+     * 引数の内容に従ってデータを一定の形式でフォーマットして返す
+     *
+     *  [
+     *      'data':[
+     *          [id=1,zipcode="101-0001",address="A県B市C町"],
+     *          [id=1,zipcode="101-0002",address="A県B市D町"],
+     *      ],
+     *      'count': 100,
+     *      'message':'100 zipcode records found.'
+     *  ]
+     *
+     *  errorsがある場合
+     *  ...
+     *  'data':['errors'=>[...]]
+     *  ...
+     *
+     * @param string $modelName
+     * @param string $action
+     * @param boolean $success
+     * @param integer $id
+     * @param mixed $data
+     * @return array
+     */
     public static function formatData($modelName, $action, $success = true, $id = null, $data = null)
     {
-        // 'data':[
-        // [id=1,zipcode="101-0001",address="A県B市C町"],
-        // [id=1,zipcode="101-0002",address="A県B市D町"],
-        // ],
-        // 'count': 100,
-        // 'message':'100 zipcode records found.'
-
-        // 'data':['errors'=>[...]]
-
         if (isset($data) and $action === 'getIndex') {
             $count = $data->count();
         } elseif (isset($data) and !isset($data['errors'])) {
@@ -43,6 +76,16 @@ class Response
         return ['data'=>$data,'count'=>$count,'message'=>$message];
     }
 
+    /**
+     * アクションの種類と成功したかで結果のメッセージを作成して返す
+     *
+     * @param integer $id
+     * @param string $action
+     * @param boolean $success
+     * @param string $modelName
+     * @param integer $count
+     * @return string
+     */
     public static function createMessage($id, $action, $success, $modelName, $count)
     {
         switch ($action) {

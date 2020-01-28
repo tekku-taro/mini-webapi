@@ -2,6 +2,8 @@
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Bootstrap\Config;
 
+// illuminate/database コンポーネントでデータベースに接続
+
 $capsule = new Capsule;
 
 $capsule->addConnection([

@@ -6,8 +6,19 @@ use App\Models\Session;
 use DateTime;
 use Lib\JWT;
 
+/**
+ * Auth class
+ * ユーザー認証、トークン認証用クラス
+ */
 class Auth
 {
+    /**
+     * ユーザー認証情報を検証し、結果を返す
+     *
+     * @param string $name
+     * @param string $password
+     * @return mixed
+     */
     public function verifyCredentials($name, $password)
     {
         if (empty($name) or empty($password)) {
@@ -45,6 +56,12 @@ class Auth
         return $user;
     }
 
+    /**
+     * ユーザーのlogin_attemptsを0でクリア
+     *
+     * @param User $user
+     * @return boolean
+     */
     protected function clearLoginAttempts($user)
     {
         // attemptsを0にする
@@ -53,6 +70,12 @@ class Auth
         return $user->save();
     }
 
+    /**
+     * ユーザーのlogin_attemptsをインクリメント
+     *
+     * @param User $user
+     * @return boolean
+     */
     protected function incrementLoginAttempts($user)
     {
         // attemptsを1プラス
@@ -62,23 +85,37 @@ class Auth
     }
 
 
-    // トークンの検証
+    /**
+     * jwtトークンの検証
+     * apiがUsersAPIの時は、管理者かどうかも検証する
+     *
+     * @param string $token
+     * @param string $apiName
+     * @return mixed
+     */
     public static function validateToken($token, $apiName)
     {
         $jwt = new JWT;
-        // ユーザー管理(admin)：
-        if ($apiName === 'UsersAPI') {
+        
+        if ($apiName === 'UsersAPI') {// ユーザー管理(admin)：
+
             // 有効なトークンか・管理者か
             $result = $jwt->validate($token, true);
-        } else {
-            // サービス(zipcodes/session)：
-            // 有効なトークンかJWT::validate()
+        } else {// サービス(zipcodes/session)：
+
+            // 有効なトークンか
             $result = $jwt->validate($token, false);
         }
         // 結果(session/false)を返す
         return $result;
     }
-        
+
+    /**
+     * リフレッシュトークンの検証
+     *
+     * @param string $refresh
+     * @return mixed
+     */
     public static function validateRefreshToken($refresh)
     {
         // refreshTokenで検索し、invalidatedか、期限内か確認

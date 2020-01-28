@@ -5,12 +5,31 @@ use Lib\AppCore\Response;
 use Lib\AppCore\API;
 use Lib\Auth;
 
+/**
+ * ResourceAPI class
+ * 一般的なリソース操作用APIクラスの親クラス
+ */
 abstract class ResourceAPI extends API
 {
+    /**
+     * リクエストオブジェクト
+     *
+     * @var Request
+     */
     protected $request;
 
 
-    protected function beforeFilter($action, $arguments)
+    /**
+     * アクションを呼び出す前に、
+     * リクエストのトークンを検証する
+     * 検証失敗したら、エラーメッセージをクライアントに返す
+     *
+     *
+     * @param string $action
+     * @param array $arguments
+     * @return boolean
+     */
+    protected function beforeFilter(string $name, array $arguments)
     {
         $apiName = get_class($this);
 
@@ -32,6 +51,16 @@ abstract class ResourceAPI extends API
     }
 
 
+    /**
+     * リスポンスデータのフォーマット用関数
+     * アクションと処理の結果によりResponse::formatData関数で
+     * 適切な書式でデータを整形して返す
+     *
+     * @param array $response
+     * @param string $action
+     * @param array $params
+     * @return array
+     */
     protected function formatResponse($response, $action, $params)
     {
         $id = null;

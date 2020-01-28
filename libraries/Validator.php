@@ -1,16 +1,55 @@
 <?php
 namespace Lib;
 
+/**
+ * Validator class
+ * データをvalidationルールで検証して
+ * エラーを返すクラス
+ */
 class Validator
 {
+    /**
+     * validationエラー配列
+     *
+     * @var array
+     */
     public $errors=[];
+
+    /**
+     * validationルール配列
+     * $columnごとに関連するルールを格納
+     *
+     * @var array
+     */
     public $rules;
+
+    /**
+     * unique rule用のモデルオブジェクト
+     *
+     * @var Illuminate\Database\Eloquent\Model
+     */
     protected $model;
+
+    /**
+     *  unique rule用のモデルID
+     *
+     * @var integer
+     */
     protected $model_id;
+
+    /**
+     * 既定のルールリスト
+     *
+     * @var array
+     */
     protected $ruleList =  ['require','email','password','zipcode', 'num','bool',
                             'string','int','list','min','max','len','unique','custom'];
 
-                            
+    /**
+     * エラーメッセージの雛形
+     *
+     * @var array
+     */
     public $messages=[
         'require'=>':column は必須項目です。',
         'string'=>':column が文字列でありません。',
@@ -27,8 +66,15 @@ class Validator
         'unique'=>":column の値 :value は既に使われています。",
         'custom'=>":column はカスタム関数を満たす必要があります。",
     ];
-                                
-    public function __construct($validationRules, $model = null,$model_id = null)
+
+    /**
+     * validationルールの設定、モデルデータを格納
+     *
+     * @param array $validationRules
+     * @param Illuminate\Database\Eloquent\Model $model
+     * @param integer $model_id
+     */
+    public function __construct($validationRules, $model = null, $model_id = null)
     {
         $this->model = $model;
         $this->model_id = $model_id;
@@ -39,6 +85,13 @@ class Validator
         }
     }
 
+    /**
+     * $rulesに$columnのvalidationルールを追加
+     *
+     * @param string $column
+     * @param array $rules
+     * @return void
+     */
     protected function addValidation($column, $rules)
     {
         $this->rules[$column] = [];
@@ -55,6 +108,13 @@ class Validator
         }
     }
     
+    /**
+     * [$key,$value]からルールと基準値を取得して返す
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @return array
+     */
     protected function getRuleAndConstraint($key, $value)
     {
         if (is_string($key)) {
@@ -67,6 +127,13 @@ class Validator
         return [$rule,$constraint];
     }
 
+    /**
+     * $dataの内容を設定したvalidationルールから検証して
+     * $errorsを返す
+     *
+     * @param array $data
+     * @return array $errors
+     */
     public function validate($data)
     {
         // 全てのcolumnについて columnRules = rules[columns]
@@ -86,6 +153,15 @@ class Validator
     }
     
 
+    /**
+     * $columnについて、関連するvalidationルールを対象データ$valueに
+     * 適用する
+     *
+     * @param string $column
+     * @param array $columnRules
+     * @param mixed $value
+     * @return void
+     */
     public function validateColumn($column, $columnRules, $value)
     {
 
@@ -106,6 +182,13 @@ class Validator
         }
     }
 
+    /**
+     * $columnのエラーメッセージを$errors配列に格納
+     *
+     * @param string $column
+     * @param string $message
+     * @return void
+     */
     protected function addError($column, $message)
     {
         if (!isset($this->errors[$column])) {
@@ -115,6 +198,15 @@ class Validator
         $this->errors[$column][] = $message;
     }
 
+    /**
+     * メッセージのプレースホルダーを置き換える
+     *
+     * @param string $message
+     * @param string $column
+     * @param mixed $value
+     * @param mixed $constraint
+     * @return void
+     */
     protected function replacePlaceHolders($message, $column, $value, $constraint)
     {
         $message = str_replace(":column", $column, $message);
@@ -197,9 +289,9 @@ class Validator
     protected function unique($column, $value)
     {
         if (empty($this->model)) {
-            throw new \ErrorException("Validator needs model class to validate unique rule.");            
+            throw new \ErrorException("Validator needs model class to validate unique rule.");
         }
-        $count = $this->model::where($column, $value)->where('id','!=',$this->model_id)->count();
+        $count = $this->model::where($column, $value)->where('id', '!=', $this->model_id)->count();
 
         if ($count) {
             return false;

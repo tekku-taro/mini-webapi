@@ -4,8 +4,19 @@ namespace App\Api\Admin;
 use Lib\AppCore\ResourceAPI;
 use App\Models\User;
 
+/**
+ * UsersAPI class
+ *
+ * User モデルを操作し、getIndex/get/post/put/delete アクションを行うクラス
+ */
 class UsersAPI extends ResourceAPI
 {
+    /**
+     * getIndex アクション
+     *
+     * @param integer $page
+     * @return mixed
+     */
     public function getIndex($page)
     {
         if (!empty($page)) {
@@ -17,6 +28,12 @@ class UsersAPI extends ResourceAPI
         }
     }
 
+    /**
+     * get アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function get($id)
     {
         if (!empty($id)) {
@@ -26,6 +43,11 @@ class UsersAPI extends ResourceAPI
         }
     }
 
+    /**
+     * post アクション
+     *
+     * @return mixed
+     */
     public function post()
     {
         $user = new User();
@@ -42,7 +64,13 @@ class UsersAPI extends ResourceAPI
             return $this->request->data;
         }
     }
-    
+
+    /**
+     * put アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function put($id)
     {
         $user = User::find($id);
@@ -66,6 +94,12 @@ class UsersAPI extends ResourceAPI
         }
     }
 
+    /**
+     * delete アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function delete($id)
     {
         $user = User::find($id);

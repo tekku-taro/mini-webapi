@@ -4,6 +4,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Lib\AppCore\Model;
 
+/**
+ * User class
+ * Userモデルのクラス
+ * users tableに対応
+ */
 class User extends Eloquent
 {
     use Model;
@@ -22,7 +27,11 @@ class User extends Eloquent
     ];
 
 
-
+    /**
+     * Userモデルのvalidationルール
+     *
+     * @return array $validationRules
+     */
     public function rules()
     {
         return[
@@ -32,28 +41,30 @@ class User extends Eloquent
             'login_attempts'=>["int"],
             'password'=>["require","min"=>6,'password'],
         ];
-            
     }
 
+    /**
+     * パスワードを保存・更新する際は、ハッシュ値に変換する
+     *
+     * @param array $options
+     * @return boolean
+     */
     public function save(array $options = [])
     {
-       // before save code 
-       if(!empty($this->password)){
-            if(isset($this->id)){
-                if($this->isDirty('password')){
+        // before save code
+        if (!empty($this->password)) {
+            if (isset($this->id)) {
+                if ($this->isDirty('password')) {
                     // password has changed
-                    $this->password = password_hash($this->password,PASSWORD_DEFAULT);
+                    $this->password = password_hash($this->password, PASSWORD_DEFAULT);
                 }
-            }else{
-                $this->password = password_hash($this->password,PASSWORD_DEFAULT);
+            } else {
+                $this->password = password_hash($this->password, PASSWORD_DEFAULT);
             }
-       }
+        }
 
-       $result = parent::save($options); // returns boolean
+        $result = parent::save($options); // returns boolean
        // after save code
        return $result; // do not ignore it eloquent calculates this value and returns this, not just to ignore
- 
     }
-
-
 }

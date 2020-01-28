@@ -169,13 +169,25 @@ LOG=On # On/Off
 例えば、データベースのstaffsテーブルをリソースにして、操作するエンドポイントの場合
 
 1. `staffs`テーブルをデータベースに作成する。
+
 2. `App/Models`フォルダ内に他のモデルクラスを複製するか、後述の雛形作成方法で`Eloquent`を継承した`Staff`クラスを作成する。
+
 3. `App/Api`フォルダ内に他の一般APIクラスを複製するか、後述の雛形作成方法で`StaffsAPI`クラスを作成する。
+
 4. `StaffsAPI`にリクエストメソッドに対応したアクションメソッドを作成し、それぞれに必要な処理を記述する。
    - `GET` : `getIndex()` または `get()`       # ルートにIDが設定されていれば（cf. api/zipcodes/1） get()に送られる
    - `POST` : `post()`                                    # レコードの新規作成
    - `PUT` : `put()`                                        # レコードの更新
    - `DELETE` : `delete()`                              # レコードの削除
+
+5. 設定ファイル( `.env` )の`API`にAPI名を追加する
+
+   ```
+   # 提供するAPIリスト
+   API=users,sessions,zipcodes,staffs	# staffsを追加
+   ```
+
+   
 
 ### アクションメソッドのパラメータ
 

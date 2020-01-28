@@ -3,20 +3,39 @@ namespace Lib\AppCore;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+/**
+ * DB class
+ * トランザクション制御用のクラス
+ */
 class DB extends Eloquent
 {
-     public static function beginTransaction()
-     {
-          self::getConnectionResolver()->connection()->beginTransaction();
-     }
+    /**
+     * トランザクションの開始
+     *
+     * @return void
+     */
+    public static function beginTransaction()
+    {
+        self::getConnectionResolver()->connection()->beginTransaction();
+    }
 
-     public static function commit()
-     {
-         self::getConnectionResolver()->connection()->commit();
-     }
+    /**
+     * トランザクションの確定処理
+     *
+     * @return void
+     */
+    public static function commit()
+    {
+        self::getConnectionResolver()->connection()->commit();
+    }
 
-     public static function rollBack()
-     {
-         self::getConnectionResolver()->connection()->rollBack();
-     }    
+    /**
+     * トランザクションの取り消し処理
+     *
+     * @return void
+     */
+    public static function rollBack()
+    {
+        self::getConnectionResolver()->connection()->rollBack();
+    }
 }

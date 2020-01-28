@@ -4,8 +4,19 @@ namespace App\Api;
 use App\Models\Zipcode;
 use Lib\AppCore\ResourceAPI;
 
+/**
+ * ZipcodesAPI class
+ *
+ * Zipcode モデルを操作し、getIndex/get/post/put/delete アクションを行うクラス
+ */
 class ZipcodesAPI extends ResourceAPI
 {
+    /**
+     * getIndex アクション
+     *
+     * @param integer $page
+     * @return mixed
+     */
     public function getIndex($page)
     {
         if (!empty($page)) {
@@ -17,6 +28,12 @@ class ZipcodesAPI extends ResourceAPI
         }
     }
 
+    /**
+     * get アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function get($id)
     {
         if (!empty($id)) {
@@ -26,6 +43,11 @@ class ZipcodesAPI extends ResourceAPI
         }
     }
 
+    /**
+     * post アクション
+     *
+     * @return mixed
+     */
     public function post()
     {
         $zipcode = new Zipcode();
@@ -43,6 +65,12 @@ class ZipcodesAPI extends ResourceAPI
         }
     }
     
+    /**
+     * put アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function put($id)
     {
         $zipcode = Zipcode::find($id);
@@ -66,6 +94,12 @@ class ZipcodesAPI extends ResourceAPI
         }
     }
 
+    /**
+     * delete アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function delete($id)
     {
         $zipcode = Zipcode::find($id);
