@@ -3,9 +3,19 @@ namespace App\Api;
 
 use App\Models\Session;
 use Lib\AppCore\ResourceAPI;
-
-class SamplesAPI extends ResourceAPI
+/**
+ * StaffsAPI class
+ *
+ * Session モデルを操作し、getIndex/get/post/put/delete アクションを行うクラス
+ */
+class StaffsAPI extends ResourceAPI
 {
+    /**
+     * getIndex アクション
+     *
+     * @param integer $page
+     * @return mixed
+     */    
     public function getIndex($page)
     {
         if (!empty($page)) {
@@ -17,6 +27,12 @@ class SamplesAPI extends ResourceAPI
         }
     }
 
+    /**
+     * get アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function get($id)
     {
         if (!empty($id)) {
@@ -26,6 +42,11 @@ class SamplesAPI extends ResourceAPI
         }
     }
 
+    /**
+     * post アクション
+     *
+     * @return mixed
+     */
     public function post()
     {
         $session = new Session();
@@ -42,7 +63,13 @@ class SamplesAPI extends ResourceAPI
             return $this->request->data;
         }
     }
-    
+
+    /**
+     * put アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */    
     public function put($id)
     {
         $session = Session::find($id);
@@ -66,6 +93,12 @@ class SamplesAPI extends ResourceAPI
         }
     }
 
+    /**
+     * delete アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function delete($id)
     {
         $session = Session::find($id);

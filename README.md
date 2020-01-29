@@ -52,6 +52,10 @@ REST APIでは、状態管理等を行わず、全てのリクエストがそれ
 
    ```
    url:hostname/api/zipcodes
+   あるいは
+   url:hostname/api/zipcodes/page/2	# 2ページ目を指定する場合
+   url:hostname/api/zipcodes/1		    # id=1のレコードを取得したい場合
+   
    method:GET
    Authorization:Bearer ACCESSTOKEN_STRING
    ```
@@ -75,7 +79,41 @@ REST APIでは、状態管理等を行わず、全てのリクエストがそれ
 
    
 
-5. `アクセストークン`の期限が切れた時は、認証エンドポイント（`SessionsAPI`）にトークンの更新をリクエスト。その際に、`jwtトークン`の中の`リフレッシュトークン`を`Authrization Header`にセットする。
+5. レコードを新規作成する場合は、リクエストメソッドを`POST`に変更し、リクエストボディにレコードの`json`データを設定して送信する。その際に、`jwtトークン`の中の`アクセストークン`を`Authrization Header`にセットする。
+
+   ```json
+   url:hostname/api/zipcodes
+   method:POST
+   Authorization:Bearer ACCESSTOKEN_STRING
+   
+   requestBody:{"zipcode":"001-0010","address":"北海道札幌市北区北十条西（１～４丁目）"}
+   ```
+
+   
+
+6. レコードを更新する場合は、リクエストメソッドを`PUT`に変更し、リクエストボディにレコードの`json`データを設定して送信する。その際に、`jwtトークン`の中の`アクセストークン`を`Authrization Header`にセットする。
+
+   ```json
+   url:hostname/api/zipcodes/2
+   method:PUT
+   Authorization:Bearer ACCESSTOKEN_STRING
+   
+   requestBody:{"id":2,"zipcode":"001-0010","address":"北海道札幌市北区北十条西（１～４丁目）"}
+   ```
+
+   
+
+7. レコードを削除する場合は、リクエストメソッドを`DELETE`に変更して送信する。その際に、`jwtトークン`の中の`アクセストークン`を`Authrization Header`にセットする。
+
+   ```
+   url:hostname/api/zipcodes
+   method:DELETE
+   Authorization:Bearer ACCESSTOKEN_STRING
+   ```
+
+   
+
+8. `アクセストークン`の期限が切れた時は、認証エンドポイント（`SessionsAPI`）にトークンの更新をリクエスト。その際に、`jwtトークン`の中の`リフレッシュトークン`を`Authrization Header`にセットする。
 
    ```
    url:hostname/api/sessions
@@ -85,13 +123,42 @@ REST APIでは、状態管理等を行わず、全てのリクエストがそれ
 
    
 
-6. 認証エンドポイントでリフレッシュトークンを検証し、認証されたら`jwtトークン`を新たに作成して返す
+9. 認証エンドポイントでリフレッシュトークンを検証し、認証されたら`jwtトークン`を新たに作成して返す
 
    ```json
    "access_token":NEW_ACCESSTOKEN, "refresh_token":NEW_REFRESHTOKEN, "message":"you are ..."
    ```
 
    
+
+10. セッションを終了する
+
+    ```
+    url:hostname/api/sessions
+    method:DELETE
+    Authorization:Bearer ACCESSTOKEN_STRING
+    ```
+
+    
+
+## エンドポイントと対応するルート・メソッド一覧
+
+- 認証エンドポイント： `hostname/api/sessions`
+  - `POST`：ユーザー認証
+  - `PUT`：トークンの更新
+  - `DELETE`：セッションを終了
+- ユーザー管理：`hostname/api/admin/users`
+  - `GET`：ユーザーリストの取得（ルートにidがあれば＃idのユーザー情報取得）
+  - `POST`：ユーザー新規作成
+  - `PUT`：ユーザー情報更新
+  - `DELETE`：ユーザー情報の削除
+- 一般API：`hostname/api/リソース名(「提供するAPIリスト」に設定された名前)` 
+  - `GET`：レコードリストの取得（ルートにidがあれば＃idのレコード取得）
+  - `POST`：レコード新規作成
+  - `PUT`：レコード更新
+  - `DELETE`：レコードの削除
+
+
 
 
 

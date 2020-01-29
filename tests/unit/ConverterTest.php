@@ -2,11 +2,13 @@
 use PHPUnit\Framework\TestCase;
 
 use Engine\Conversion\Converter;
-use App\Models\User;
+use Engine\FileManager\TemplateManager;
 use Bootstrap\Config;
 
 class ConverterTest extends TestCase
 {
+    protected $fileManager;
+
     public static function setUpBeforeClass(): void
     {
         require_once('./vendor/autoload.php');
@@ -23,6 +25,7 @@ class ConverterTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->fileManager = new TemplateManager(ENGINE . '/templates');
     }
 
     protected function tearDown(): void
@@ -85,7 +88,7 @@ class ConverterTest extends TestCase
      */
     public function testConvert($content, $vars, $template, $expected)
     {
-        $converter = new Converter($content, $vars, $template);
+        $converter = new Converter($content, $vars, $template, $this->fileManager);
         $result = $converter->convert();
 
         $this->assertEquals($expected, $result);

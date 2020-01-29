@@ -4,6 +4,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Lib\AppCore\Model;
 
+/**
+ * Session class
+ *
+ */
 class Session extends Eloquent
 {
     use Model;
@@ -15,7 +19,7 @@ class Session extends Eloquent
     ];
 
     /**
-    * rules
+    * validation rules
     * テーブルカラムの validation ルールを設定
     *  cf. 'username'=>["require","string","len"=>8],
     *  

@@ -3,9 +3,19 @@ namespace App\Api;
 
 use App\Models\{{ modelName }};
 use Lib\AppCore\ResourceAPI;
-
+/**
+ * {{ className }} class
+ *
+ * {{ modelName }} モデルを操作し、getIndex/get/post/put/delete アクションを行うクラス
+ */
 class {{ className }} extends ResourceAPI
 {
+    /**
+     * getIndex アクション
+     *
+     * @param integer $page
+     * @return mixed
+     */    
     public function getIndex($page)
     {
         if (!empty($page)) {
@@ -17,6 +27,12 @@ class {{ className }} extends ResourceAPI
         }
     }
 
+    /**
+     * get アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function get($id)
     {
         if (!empty($id)) {
@@ -26,6 +42,11 @@ class {{ className }} extends ResourceAPI
         }
     }
 
+    /**
+     * post アクション
+     *
+     * @return mixed
+     */
     public function post()
     {
         ${{ varName }} = new {{ modelName }}();
@@ -42,7 +63,13 @@ class {{ className }} extends ResourceAPI
             return $this->request->data;
         }
     }
-    
+
+    /**
+     * put アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */    
     public function put($id)
     {
         ${{ varName }} = {{ modelName }}::find($id);
@@ -66,6 +93,12 @@ class {{ className }} extends ResourceAPI
         }
     }
 
+    /**
+     * delete アクション
+     *
+     * @param integer $id
+     * @return mixed
+     */
     public function delete($id)
     {
         ${{ varName }} = {{ modelName }}::find($id);
